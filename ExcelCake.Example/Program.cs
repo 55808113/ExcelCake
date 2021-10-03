@@ -14,8 +14,8 @@ namespace ExcelCake.Example
         {
             //IntrusiveExport();
             //IntrusiveMultiSheetExport();
-            //NoIntrusiveExport();
-            IntrusiveImport();
+            NoIntrusiveExport();
+            //IntrusiveImport();
 
             Console.ReadKey();
         }
@@ -97,7 +97,7 @@ namespace ExcelCake.Example
             File.WriteAllBytes(file.FullName, temp);
             Console.WriteLine("IntrusiveMultiSheetExport导出完成!");
         }
-
+        
         private static void NoIntrusiveExport()
         {
             var reportInfo = new GradeReportInfo();
@@ -224,7 +224,7 @@ namespace ExcelCake.Example
             reportInfo.List2 = list2;
             reportInfo.List3 = list3;
 
-            ExcelTemplate customTemplate = new ExcelTemplate(templateFileName);
+            ExcelTemplate customTemplate = new ExcelTemplate();
             var byteInfo = customTemplate.ExportToBytes(reportInfo, "Template/复杂格式测试模板.xlsx");
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Export");
             if (!Directory.Exists(path))

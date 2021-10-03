@@ -17,19 +17,19 @@ namespace ExcelCake.NoIntrusive
     /// </summary>
     public class ExcelTemplate
     {
-        private string _TemplateFile;
-        private string _TemplateSheetName;
+        /*private string _TemplateFile;
+        private string _TemplateSheetName;*/
 
-        private ExcelTemplate()
+        public ExcelTemplate()
         {
 
         }
-
-        public ExcelTemplate(string templateFilePath,string sheetName="Sheet1")
+/*
+        public ExcelTemplate(string templateFilePath, string sheetName = "Sheet1")
         {
             _TemplateFile = templateFilePath;
             _TemplateSheetName = sheetName;
-        }
+        }*/
 
         /// <summary>
         /// 填充报表(待重构)
@@ -37,7 +37,7 @@ namespace ExcelCake.NoIntrusive
         /// <param name="workSheet"></param>
         /// <param name="dataSource"></param>
         /// <returns></returns>
-        public ExcelWorksheet FillSheetData(ExcelWorksheet workSheet,ExcelObject dataSource)
+        public ExcelWorksheet FillSheetData(ExcelWorksheet workSheet, ExcelObject dataSource)
         {
             if (workSheet == null || dataSource == null)
             {
@@ -70,12 +70,12 @@ namespace ExcelCake.NoIntrusive
 
             foreach (var item in sheetSetting.GridSettingList)
             {
-                var newRow = 0;
-                var newCol = 0;
+                //var newRow = 0;
+                //var newCol = 0;
 
                 var topList = new List<KeyValuePair<ExcelRange, int>>();
                 //查找导致其位移的其他表格
-                foreach(var otherGrid in cloneList.SkipWhile(o => o.AddressLeftTop == item.AddressLeftTop && o.AddressRightBottom == item.AddressRightBottom))
+                foreach (var otherGrid in cloneList.SkipWhile(o => o.AddressLeftTop == item.AddressLeftTop && o.AddressRightBottom == item.AddressRightBottom))
                 {
                     if (string.IsNullOrEmpty(otherGrid.AddressLeftTop) || string.IsNullOrEmpty(otherGrid.AddressRightBottom))
                     {
@@ -94,8 +94,8 @@ namespace ExcelCake.NoIntrusive
                     }
                     var offCount = count - 1;
 
-                    var newRange = workSheet.Cells[otherGrid.FromRow+3, otherGrid.FromCol, otherGrid.ToRow+3, otherGrid.ToCol];
-                    
+                    var newRange = workSheet.Cells[otherGrid.FromRow + 3, otherGrid.FromCol, otherGrid.ToRow + 3, otherGrid.ToCol];
+
 
                 }
 
@@ -104,9 +104,9 @@ namespace ExcelCake.NoIntrusive
 
 
             List<string> mergedList = new List<string>();
-            foreach(var item in workSheet.MergedCells)
+            foreach (var item in workSheet.MergedCells)
             {
-                mergedList.Add(item.Replace(":",","));
+                mergedList.Add(item.Replace(":", ","));
             }
 
             Dictionary<TemplateSettingRange, int> regionAddDic = new Dictionary<TemplateSettingRange, int>();
@@ -137,25 +137,26 @@ namespace ExcelCake.NoIntrusive
                 }
                 foreach (var addItem in regionAddDic)
                 {
-                    if (addItem.Key.FromRow < item.FromRow&&addItem.Value>offsetCount)
+                    if (addItem.Key.FromRow < item.FromRow && addItem.Value > offsetCount)
                     {
                         offsetCount = addItem.Value;
                     }
-                    else if(addItem.Key.FromRow == item.FromRow)
+                    else if (addItem.Key.FromRow == item.FromRow)
                     {
                         emptyCount = addItem.Value > addCount ? addItem.Value - addCount : 0;
-                        addCount = addItem.Value>addCount?0:addCount-addItem.Value;
+                        addCount = addItem.Value > addCount ? 0 : addCount - addItem.Value;
                         sameCount = addItem.Value > addCount ? 0 : addItem.Value;
                     }
                 }
 
                 //动态添加行
-                if (addCount>0)
+                if (addCount > 0)
                 {
-                    workSheet.InsertRow(item.FromRow+offsetCount + 1, addCount);
+                    //添加了一个参数否则样式没有办法统一
+                    workSheet.InsertRow(item.FromRow + offsetCount + 1, addCount, item.FromRow);
                     regionAddDic.Add(item, addCount + sameCount);
                 }
-                
+
                 foreach (var field in item.Fields)
                 {
                     var fieldName = field.Field;
@@ -246,11 +247,11 @@ namespace ExcelCake.NoIntrusive
         /// <summary>
         /// 导出为byte[]数据
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="sheetName"></param>
+        /// <typeparam name="dataSource">数据</typeparam>
+        /// <param name="templatePath">模板路径</param>
+        /// <param name="sheetName">sheet的名称。默认为Sheet1</param>
         /// <returns></returns>
-        public byte[] ExportToBytes(ExcelObject dataSource,string templatePath, string sheetName = "Sheet1")
+        public byte[] ExportToBytes(ExcelObject dataSource, string templatePath, string sheetName = "Sheet1")
         {
             byte[] excelBuffer = null;
             if (!File.Exists(templatePath))
@@ -266,10 +267,10 @@ namespace ExcelCake.NoIntrusive
                     return excelBuffer;
                 }
                 ExcelPackage newPackage = new ExcelPackage();
-                newPackage.Workbook.Worksheets.Add(sheetName, package.Workbook.Worksheets[_TemplateSheetName]);
+                newPackage.Workbook.Worksheets.Add(sheetName, package.Workbook.Worksheets[sheetName]);
                 var ws = newPackage.Workbook.Worksheets.First();
                 ws = FillSheetData(ws, dataSource);
-                
+
                 excelBuffer = newPackage.GetAsByteArray();
             }
             return excelBuffer;
@@ -278,9 +279,10 @@ namespace ExcelCake.NoIntrusive
         /// <summary>
         /// 导出为byte[]数据
         /// </summary>
-        /// <param name="dataSource"></param>
-        /// <param name="sheetName"></param>
-        /// <returns></returns>
+        /// <param name="dataSource">DataSet的数据</param>
+        /// <param name="templatePath">模板的路径</param>
+        /// <param name="sheetName">sheet的名称。默认为Sheet1</param>
+        /// <returns>导出为byte[]数据</returns>
         public byte[] ExportToBytes(object dataSource, string templatePath, string sheetName = "Sheet1")
         {
             return ExportToBytes(new ExcelObject(dataSource), templatePath, sheetName);
@@ -289,12 +291,13 @@ namespace ExcelCake.NoIntrusive
         /// <summary>
         /// 导出为byte[]数据
         /// </summary>
-        /// <param name="dataSource"></param>
-        /// <param name="sheetName"></param>
-        /// <returns></returns>
-        public byte[] ExportToBytes(DataSet dataSource,string templatePath,string sheetName = "Sheet1")
+        /// <param name="dataSource">DataSet的数据</param>
+        /// <param name="templatePath">模板的路径</param>
+        /// <param name="sheetName">sheet的名称。默认为Sheet1</param>
+        /// <returns>导出为byte[]数据</returns>
+        public byte[] ExportToBytes(DataSet dataSource, string templatePath, string sheetName = "Sheet1")
         {
-            return ExportToBytes(new ExcelObject(dataSource), sheetName);
+            return ExportToBytes(new ExcelObject(dataSource), templatePath, sheetName);
         }
     }
 }

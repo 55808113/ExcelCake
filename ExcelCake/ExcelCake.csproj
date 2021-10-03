@@ -18,8 +18,14 @@
     <Compile Remove="Intrusive\Attribute\NoExportAttribute.cs" />
     <Compile Remove="Intrusive\Enum\EnumExportModalType.cs" />
     <Compile Remove="Intrusive\Extension\ImportExtension.cs" />
+    <Compile Remove="NoIntrusive\TemplateSettingRange.cs" />
     <Compile Remove="NoIntrusive\TemplateSettingRangeChart.cs" />
+    <Compile Remove="NoIntrusive\TemplateSettingSheet.cs" />
     <Compile Remove="NoIntrusive\TemplateSetting\TemplateSettingRangeChart.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="NoIntrusive\TemplateSetting\TemplateSettingSheet.cs~RFd0e347.TMP" />
   </ItemGroup>
   
   <ItemGroup>

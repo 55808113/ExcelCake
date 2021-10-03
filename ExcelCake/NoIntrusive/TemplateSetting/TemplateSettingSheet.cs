@@ -118,37 +118,35 @@ namespace ExcelCake.NoIntrusive
                     var cellValueStr = cell.Value?.ToString() ?? "";
                     cell.Value = cellValueStr.Replace("{" + item + "}", "");
                 }
-
-                //自由格式
-                foreach(var free in _FreeSettingList)
-                {
-                    foreach(var field in _FieldSettingList)
-                    {
-                        var isContain = ExcelCommon.IsCellInRange(free.AddressLeftTop, free.AddressRightBottom, field.CurrentCell);
-
-                        if (isContain)
-                        {
-                            free.Fields.Add(field);
-                        }
-                    }
-                }
-
-                //表格
-                foreach(var grid in _GridSettingList)
-                {
-                    foreach (var field in _FieldSettingList)
-                    {
-                        var isContain = ExcelCommon.IsCellInRange(grid.AddressLeftTop, grid.AddressRightBottom, field.CurrentCell);
-
-                        if (isContain)
-                        {
-                            grid.Fields.Add(field);
-                        }
-                    }
-                }
-
-
                 //图表
+            }
+
+            //自由格式
+            foreach (var free in _FreeSettingList)
+            {
+                foreach (var field in _FieldSettingList)
+                {
+                    var isContain = ExcelCommon.IsCellInRange(free.AddressLeftTop, free.AddressRightBottom, field.CurrentCell);
+
+                    if (isContain)
+                    {
+                        free.Fields.Add(field);
+                    }
+                }
+            }
+
+            //表格
+            foreach (var grid in _GridSettingList)
+            {
+                foreach (var field in _FieldSettingList)
+                {
+                    var isContain = ExcelCommon.IsCellInRange(grid.AddressLeftTop, grid.AddressRightBottom, field.CurrentCell);
+
+                    if (isContain)
+                    {
+                        grid.Fields.Add(field);
+                    }
+                }
             }
         }
     }

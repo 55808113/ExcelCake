@@ -28,7 +28,7 @@ namespace ExcelCake.NoIntrusive
         }
 
         protected override void AnalyseSetting()
-        {
+        {            
             var cellValue = this.Content;
             var arry = cellValue.Split(new char[2] { '{', '}' }, StringSplitOptions.RemoveEmptyEntries);
             if (arry.Length == 0)
@@ -67,7 +67,11 @@ namespace ExcelCake.NoIntrusive
                         }
                     }
                 }
-
+                //需要添加一个判断否则会出错,例如：班级{}
+                if (string.IsNullOrEmpty(this.AddressLeftTop)|| string.IsNullOrEmpty(this.AddressRightBottom))
+                {
+                    continue;
+                }
                 ExcelCommon.CalcRowCol(this.AddressLeftTop, out int fromRow, out int fromCol);
                 ExcelCommon.CalcRowCol(this.AddressRightBottom, out int toRow, out int toCol);
                 this.FromRow = fromRow;
